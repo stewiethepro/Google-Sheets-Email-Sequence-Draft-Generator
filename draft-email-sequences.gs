@@ -47,13 +47,16 @@ function createDrafts() {
   var sheetsData = getData(sheets);
 
   // Define contacts sheet object
-  var contacts = sheetsData[0].contacts
+  var contacts = sheetsData[0].contacts;
 
   // Define templates sheet object
-  var templates = sheetsData[1].templates
+  var templates = sheetsData[1].templates;
+
+  // Define ae sheet object
+  var ae = sheetsData[2].ae;
 
   // Define aeData object
-  var aeData = assignAeVariables(templates);
+  var aeData = assignAeVariables(ae);
 
   // Define templates object
   var templatesData = assignTemplateVariables(templates);
@@ -126,7 +129,7 @@ function getSheets() {
 // Select sheets
 var sheet = SpreadsheetApp.getActiveSpreadsheet(); // Use data from the active sheet
 
-  return [{contacts: sheet.getSheetByName('Contacts')}, {templates: sheet.getSheetByName('Templates')}]
+  return [{contacts: sheet.getSheetByName('Contacts')}, {templates: sheet.getSheetByName('Templates')}, {ae: sheet.getSheetByName('AE')}]
 
 }
 
@@ -160,10 +163,10 @@ function getData (sheets) {
 
 };
 
-function assignAeVariables(templates) {
+function assignAeVariables(ae) {
 
     // Define aeName
-    var aeName = splitName(templates.data[0][5]);
+    var aeName = splitName(ae.data[0][0]);
 
     // Define aeData object
     var aeData = {
@@ -171,9 +174,9 @@ function assignAeVariables(templates) {
       "lastName": aeName.lastName,
       "fullName": aeName.fullName,
       "email": aeName.firstName.toLowerCase() + '.' + aeName.lastName.toLowerCase() + '@' + 'oncehub.com',
-      "title": templates.data[0][6],
-      "ext": templates.data[0][7],
-      "bookingPage": templates.data[0][8],
+      "title": ae.data[0][1],
+      "ext": ae.data[0][2],
+      "bookingPage": ae.data[0][3],
     }
 
     return aeData
