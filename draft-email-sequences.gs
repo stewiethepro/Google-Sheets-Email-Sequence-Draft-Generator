@@ -235,7 +235,7 @@ function assignContactVariables(contacts, row) {
         "sequenceID": row[5],
         "lastEmailDate": row[6],
         "emailID": row[7],
-        "emailStatus": row[contacts.lastColumn - 2]
+        "emailStatus": row[8]
       }
 
       // Check if we have their email
@@ -470,7 +470,7 @@ function updateFields(sheets, contacts, finalContent, i) {
     "email " + newStage + " drafted"
   ]];
 
-  sheet.getRange(contacts.startRow + i, contacts.lastColumn - 3, 1, 3).setValues(outputData); // Update the last columns with date, emailID and emailStatus
+  sheet.getRange(contacts.startRow + i, 7, 1, 3).setValues(outputData); // Update the last columns with date, emailID and emailStatus
   SpreadsheetApp.flush(); // Make sure the last cell is updated right away
 
 };
