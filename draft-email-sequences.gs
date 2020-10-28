@@ -258,7 +258,10 @@ function assignContactVariables(contacts, row) {
 function createEmailMergeFields(contactData, aeData, emailMergeFieldsLabels) {
 
 // Create array of email merge fields
-var emailMergeFieldsData = [contactData.firstName, contactData.lastName, contactData.title, contactData.company, contactData.domain, '<div>', '</div> <div><br></div>', aeData.fullName, aeData.firstName, aeData.lastName, aeData.email, aeData.title, aeData.ext, aeData.bookingPage];
+var emailMergeFieldsHtml = [contactData.firstName, contactData.lastName, contactData.title, contactData.company, contactData.domain, '<div>', '</div> <div><br></div>', aeData.fullName, aeData.firstName, aeData.lastName, aeData.email, aeData.title, aeData.ext, aeData.bookingPage];
+var emailMergeFieldsPlainText = [contactData.firstName, contactData.lastName, contactData.title, contactData.company, contactData.domain, '', '', aeData.fullName, aeData.firstName, aeData.lastName, aeData.email, aeData.title, aeData.ext, aeData.bookingPage]
+
+var emailMergeFieldsData = {"html": emailMergeFieldsHtml, "plainText": emailMergeFieldsPlainText};
 
 return emailMergeFieldsData;
 
@@ -425,14 +428,15 @@ function generateEmailContent(dateNow, contactData, aeData, templateContent, ema
   // Combine body and signature templates
   var emailSubjectTemplate = templateContent.email.subject;
   var emailBodyTemplate = templateContent.email.body + emailSignatureTemplate;
+  var emailPlainTextTemplate = templateContent.email.body;
 
   // Create email merge fields
   var emailMergeFieldsData = createEmailMergeFields(contactData, aeData, emailMergeFieldsLabels);
 
-
   // Merge fields on templates
-  var emailSubject = replaceMergeFields(emailSubjectTemplate, emailMergeFieldsData, emailMergeFieldsLabels);
-  var emailBody = replaceMergeFields(emailBodyTemplate, emailMergeFieldsData, emailMergeFieldsLabels);
+  var emailSubject = replaceMergeFields(emailSubjectTemplate, emailMergeFieldsData.html, emailMergeFieldsLabels);
+  var emailBody = replaceMergeFields(emailBodyTemplate, emailMergeFieldsData.html, emailMergeFieldsLabels);
+  var emailPlainText = replaceMergeFields(emailPlainTextTemplate, emailMergeFieldsData.plainText, emailMergeFieldsLabels);
 
   // Generate email ID
   var emailID = createEmailID();
@@ -445,6 +449,7 @@ function generateEmailContent(dateNow, contactData, aeData, templateContent, ema
   {
     "emailSubject": emailSubject,
     "emailBody": emailBody,
+    "emailPlainText": emailPlainText,
     "emailID": emailID
   }
 
@@ -486,7 +491,7 @@ function draftEmail(dateNow, contactData, aeData, templateContent, emailSignatur
   GmailApp.createDraft(
     contactData.email.to,                     // Recipient
     finalContent.emailContent.emailSubject,                      // Subject
-    '',                                // Body (plain text)
+    finalContent.emailContent.emailPlainText,                                // Body (plain text)
     {
       htmlBody: finalContent.emailContent.emailBody + finalContent.emailContent.emailID.formattedEmailID,                // Options: Body (HTML)
       bcc: contactData.email.bcc
@@ -499,11 +504,11 @@ function draftEmail(dateNow, contactData, aeData, templateContent, emailSignatur
 
 function draftReplyAll(message, dateNow, contactData, aeData, templateContent, emailSignatureTemplate, emailMergeFieldsLabels, stage) {
 
-  var finalContent = generateEmailContent(dateNow, contactData, aeData, templateContent, emailSignatureTemplate,emailMergeFieldsLabels, stage);
+  var finalContent = generateEmailContent(dateNow, contactData, aeData, templateContent, emailSignatureTemplate, emailMergeFieldsLabels, stage);
 
   // Draft reply
   message.createDraftReply(
-  "",
+  finalContent.emailContent.emailPlainText,
   {
   htmlBody: finalContent.emailContent.emailBody + finalContent.emailContent.emailID.formattedEmailID,
   bcc: contactData.email.bcc
