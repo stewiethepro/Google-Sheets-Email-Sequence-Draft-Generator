@@ -73,6 +73,10 @@ function createDrafts() {
 
     // Get templateContent
     var templateContent = lookupTemplate(contactData, templatesData, stage);
+    
+    if (templateContent.lastTemplate == true) {
+      continue
+    };
 
     // Check if stage = email 3, then continue if so
     if (stage == 3) {
@@ -303,9 +307,12 @@ function lookupTemplate(contactData, templatesData, stage) {
 
     template = sequence[j];
     templateID = template.templateID;
+    var lastTemplate = true;
 
       if (templateID == "Email " + targetStage) {
 
+       lastTemplate = false; 
+        
        var templateContent =
       {
         "sequenceID": template.sequenceID,
@@ -315,14 +322,27 @@ function lookupTemplate(contactData, templatesData, stage) {
         {
           "subject": template.email.subject,
           "body": template.email.body
-        }
+        },
+        "lastTemplate": lastTemplate
       }
-
+    
       return templateContent
-
+      
       }
+ 
   }
-
+  
+  if (lastTemplate == true) {
+  
+    var templateContent =
+      {
+        "lastTemplate": lastTemplate
+      }
+  
+    return templateContent;
+    
+  }
+  
 };
 
 //
