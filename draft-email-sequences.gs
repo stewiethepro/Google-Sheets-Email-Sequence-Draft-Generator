@@ -7,6 +7,12 @@
 // Get UI
 var ui = SpreadsheetApp.getUi();
 
+// Get sheet
+var sheet = SpreadsheetApp.getActiveSpreadsheet(); // Use data from the active sheet
+
+// Define log sheet
+var log = sheet.getSheetByName('Log');
+
 // Define merge field labels
 var emailMergeFieldsLabels = ['{contactFirstName}', '{contactLastName}', '{contactTitle}', '{companyName}', '{domain}', '{START}', '{END}', '{aeName}', '{aeFirstName}','{aeLastName}', '{aeEmail}', '{aeTitle}', '{aeExt}', '{aeBP}'];
 
@@ -127,7 +133,7 @@ function createDrafts() {
 
         };
 
-  updateFields(sheets, contacts, finalContent, i);
+  updateFields(sheets, contacts, contactData, log, finalContent, i);
 
   }
 
@@ -141,8 +147,6 @@ function createDrafts() {
 
 
 function getSheets() {
-// Select sheets
-var sheet = SpreadsheetApp.getActiveSpreadsheet(); // Use data from the active sheet
 
   return [{contacts: sheet.getSheetByName('Contacts')}, {templates: sheet.getSheetByName('Templates')}, {ae: sheet.getSheetByName('AE')}]
 
@@ -499,7 +503,7 @@ function generateEmailContent(dateNow, contactData, aeData, templateContent, ema
 
 };
 
-function updateFields(sheets, contacts, finalContent, i) {
+function updateFields(sheets, contacts, contactData, log, finalContent, i) {
 
   var sheet = sheets[0].contacts;
   var newStage = finalContent.outputData.stage + 1;
@@ -510,6 +514,10 @@ function updateFields(sheets, contacts, finalContent, i) {
     "email " + newStage + " drafted"
   ]];
 
+  // Log email
+  log.appendRow([contactData.fullName, contactData.email.to, contactData.title, contactData.company, contactData.domain, contactData.sequenceID, outputData[0][0], outputData[0][1], outputData[0][2]]);
+
+  // Update fields
   sheet.getRange(contacts.startRow + i, 7, 1, 3).setValues(outputData); // Update the last columns with date, emailID and emailStatus
   SpreadsheetApp.flush(); // Make sure the last cell is updated right away
 
