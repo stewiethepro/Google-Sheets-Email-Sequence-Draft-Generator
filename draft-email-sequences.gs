@@ -68,12 +68,18 @@ function createDrafts() {
     // Define contactData object
     var contactData = assignContactVariables(contacts, row);
 
+    // Check if stop sequence is true, if so then skip to next contact
+    if (contactData.stopSequence == true) {
+      continue
+    };
+
     // Define stage
     var stage = defineStage(contactData);
 
     // Get templateContent
     var templateContent = lookupTemplate(contactData, templatesData, stage);
-    
+
+    // Check if all templates have been drafted for the sequence, if so then skip to next contact
     if (templateContent.lastTemplate == true) {
       continue
     };
@@ -87,6 +93,11 @@ function createDrafts() {
 
       // Check if stage = email 0, then draft an email
       if (stage == 0) {
+
+        // create stop sequence checkbox
+        var sheet = sheets[0].contacts;
+        var range = sheet.getRange(contacts.startRow + i, 10, 1, 1);
+        range.insertCheckboxes();
 
         // createDraft
         var finalContent = draftEmail(dateNow, contactData, aeData, templateContent, emailSignatureTemplate, emailMergeFieldsLabels, stage);
@@ -145,7 +156,7 @@ function getData (sheets) {
     var sheetName = Object.keys(sheet);
     var startRow = 2;                                                        // First row of data to process
     var numRows = sheet[sheetName].getLastRow() - 1;                            // Number of rows to process
-    var lastColumn = sheet[sheetName].getLastColumn();                          // Last column
+    var lastColumn = sheet[sheetName].getLastColumn();                         // Last column
     var dataRange = sheet[sheetName].getRange(startRow, 1, numRows, lastColumn) // Fetch the data range of the active sheet
     var data = dataRange.getValues();
 
@@ -242,7 +253,8 @@ function assignContactVariables(contacts, row) {
         "sequenceID": row[5],
         "lastEmailDate": row[6],
         "emailID": row[7],
-        "emailStatus": row[8]
+        "emailStatus": row[8],
+        "stopSequence": row[9]
       }
 
       // Check if we have their email
@@ -311,8 +323,8 @@ function lookupTemplate(contactData, templatesData, stage) {
 
       if (templateID == "Email " + targetStage) {
 
-       lastTemplate = false; 
-        
+       lastTemplate = false;
+
        var templateContent =
       {
         "sequenceID": template.sequenceID,
@@ -325,24 +337,24 @@ function lookupTemplate(contactData, templatesData, stage) {
         },
         "lastTemplate": lastTemplate
       }
-    
+
       return templateContent
-      
+
       }
- 
+
   }
-  
+
   if (lastTemplate == true) {
-  
+
     var templateContent =
       {
         "lastTemplate": lastTemplate
       }
-  
+
     return templateContent;
-    
+
   }
-  
+
 };
 
 //
