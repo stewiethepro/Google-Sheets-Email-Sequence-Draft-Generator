@@ -548,7 +548,7 @@ function draftReplyAll(message, dateNow, contactData, aeData, templateContent, e
   finalContent.emailContent.emailPlainText,
   {
   htmlBody: finalContent.emailContent.emailBody + finalContent.emailContent.emailID.formattedEmailID,
-  bcc: contactData.email.bcc
+    bcc: contactData.email.bcc + ',' + contactData.email.to
   });
 
   return finalContent
