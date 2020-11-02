@@ -92,9 +92,7 @@ function createDrafts() {
 
     // Check if stage = email 3, then continue if so
     if (stage == 3) {
-
       continue
-
     }
 
       // Check if stage = email 0, then draft an email
@@ -116,7 +114,6 @@ function createDrafts() {
 
           var timeToDraft = checkDaysLeft(dateNow, contactData, templateContent);
 
-
           if (timeToDraft == true) {
 
             // find sent email
@@ -127,14 +124,14 @@ function createDrafts() {
               // Draft a reply to the email
               var finalContent = draftReplyAll(message, dateNow, contactData, aeData, templateContent, emailSignatureTemplate, emailMergeFieldsLabels, stage);
 
-            } else continue
-
-          } else continue
-
-        };
-
+            } else {
+              continue
+            }
+          } else {
+            continue
+          }
+        }
   updateFields(sheets, contacts, contactData, log, finalContent, i);
-
   }
 
 }
@@ -368,15 +365,16 @@ function checkDaysLeft(dateNow, contactData, templateContent) {
   if (days >= templateContent.daysBeforeSend) {
     return true
   }
-  else return false
-
+  else {
+    return false
+       }
 }
 
 // Only run if stage 1 or 2, takes emailID as an argument
 function daysSinceLastContact (startDate, endDate) {
 
-  var startDate = new Date().valueOf();
-  var endDate = new Date().valueOf();
+  var startDate = startDate
+  var endDate = endDate;
   var sec = 1000;
   var min = 60*sec;
   var hour = 60*min;
@@ -520,7 +518,6 @@ function updateFields(sheets, contacts, contactData, log, finalContent, i) {
   // Update fields
   sheet.getRange(contacts.startRow + i, 7, 1, 3).setValues(outputData); // Update the last columns with date, emailID and emailStatus
   SpreadsheetApp.flush(); // Make sure the last cell is updated right away
-
 };
 
 function draftEmail(dateNow, contactData, aeData, templateContent, emailSignatureTemplate, emailMergeFieldsLabels, stage) {
