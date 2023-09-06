@@ -1,4 +1,4 @@
-# GSheets---Email-Sequence-Draft-Generator
+# Google Sheets Email Sequence Draft Generator
 
 Build a lead list and draft email sequences, all without leaving Google Sheets.
 
